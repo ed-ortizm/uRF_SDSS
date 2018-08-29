@@ -28,12 +28,12 @@ a_l_x = np.array([ 6.591,  6.265,  4.315,  3.806,  3.055,  2.688,  0.829,  0.265
 f_interp = interp1d(wls_x, a_l_x, kind="cubic")
 
 
-def getFitsFiles(gs, dbPath, fitsFolder='fits/'):
+def getFitsFiles(gs, dbPath):
 
     """
     Downloads .fits files from SDSS dr14 for the galaxies specified in the gs DataFrame to dbPath (parallel version)
     :param gs: Pandas Dataframe: Containing the fields 'plate', 'mjd', 'fiberid', run2d'
-    :param dbPath: String: Path to DB folder
+    :param dbPath: String: Path to dB folder (where 'sas' folder is located).
     :param fitsFolder: String: fitsFolder name inside dbPath to place the .fits file
     :return: None.
     """
@@ -43,7 +43,6 @@ def getFitsFiles(gs, dbPath, fitsFolder='fits/'):
         start = time()
 
         # Create fits' DB folder, if needed
-        dbPath += fitsFolder
         if not os.path.exists(dbPath):
             os.makedirs(dbPath)
 
@@ -63,7 +62,7 @@ def getFitFile_i(gs, dbPath, i):
     """
     Downloading the ith .fits file in the gs DataFrame to dbPath.
     :param gs: Pandas Dataframe: Containing the fields 'plate', 'mjd', 'fiberid', run2d'
-    :param dbPath: String: Path to DB folder
+    :param dbPath: String: Path to dB folder (where 'sas' folder is located).
     :param i: Int: The index of the galaxy's .fits file to download
     :return: 0, if succeeded to download. 1 if failed.
     """
@@ -93,7 +92,7 @@ def getFitsFile(plate, mjd, fiberid, run2d, dbPath):
     :param mjd: String: mjd
     :param fiberid: String (4 digits): fiber ID
     :param run2d: String: run2d
-    :param dbPath: Strings: Path for .fits file
+    :param dbPath: String: Path to dB folder (where 'sas' folder is located).
     :return: None.
     """
 
@@ -101,7 +100,7 @@ def getFitsFile(plate, mjd, fiberid, run2d, dbPath):
     filename = '-'.join(['spec',plate,mjd,fiberid]) + '.fits'
     SDSSpath = 'sas/dr14/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
     url = 'https://data.sdss.org/' + SDSSpath + filename
-    folderPath = dbPath + 'fits/' + SDSSpath
+    folderPath = dbPath + SDSSpath
     dest = folderPath + filename
 
     # Create folder for the .fits file, if needed
@@ -259,7 +258,7 @@ def fitsToSpecs_i(g, dbPath, i):
     filename = '-'.join(['spec', plate, mjd, fiberid]) + '.fits'
     SDSSpath = 'sas/dr14/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
 
-    dest = dbPath + 'fits/' + SDSSpath + filename
+    dest = dbPath + SDSSpath + filename
 
     # Try to obtain the spectrum from the .fits file 10 times
     warnings.filterwarnings("error")
