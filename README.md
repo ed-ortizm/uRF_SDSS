@@ -1,5 +1,5 @@
 # uRF_SDSS
-## Applying an Unsupervised Machine-Learning Algorithm to a Large Dataset of Galaxy Spectra
+## Applying Machine-Learning Algorithms to Large Datasets of Galaxy Spectra
 
 This repository summarizes the work of Guy Goren, with Prof. Dovi Poznanski as the advisor, from the School of Physics & Astronomy at Tel Aviv University, as part of the Physics department's honor program. Please find below the research's abstract.
 
