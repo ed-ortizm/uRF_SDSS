@@ -33,8 +33,23 @@ print(f'{n0_rows - n1_rows} galaxies with z <= 0.01 removed')
 gs.index = np.arange(n1_rows)
 
 # Choose the top n_obs median SNR objects
+# It is supposed to be already ordered, but it isn't
+gs.sort_values(by=['snMedian'], ascending=False, inplace=True)
 n_obs = 1000
 gs = gs[:n_obs]
+
+gs.index = np.arange(n_obs)
+
+# Create links for the Download
+
+url_head = 'http://skyserver.sdss.org/dr14/en/tools/explore/summary.aspx?plate='
+
+gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
+            + gs['mjd'].astype(str) \
+            + '&fiber=' + gs['fiberid'].map('{:04}'.format)
+
+
+print(gs['url'][0])
 
 t_f = time()
 print(f'Time elapsed: {t_f-t_i:2}')
