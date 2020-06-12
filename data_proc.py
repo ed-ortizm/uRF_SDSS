@@ -3,7 +3,10 @@ import os
 import numpy as np
 import pandas as pd
 from time import time
-
+import matplotlib
+import matplotlib.pyplot as plt
+from uRF_SDSS import getFitsFiles
+from uRF_SDSS import calcEbv
 t_i = time()
 #### Obtain the spectra from SDSS DR14
 
@@ -49,7 +52,36 @@ gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
             + '&fiber=' + gs['fiberid'].map('{:04}'.format)
 
 
-print(gs['url'][0])
+# Plotting the z and SNR distribution
+
+# fig, axarr = plt.subplots(1, 2)
+#
+# fig.set_figheight(7)
+# fig.set_figwidth(14)
+#
+# ax1 = axarr[0]
+# ax1.hist(gs.z, bins=int(len(gs)/50))
+# ax1.set_xlabel('z')
+# ax1.set_ylabel('Count')
+# ax1.set_title('Redshift Histogram')
+#
+# ax2 = axarr[1]
+# ax2.hist(gs.snMedian, bins=int(len(gs)/50))
+# ax2.set_xlabel('median SNR')
+# ax2.set_ylabel('Count')
+# ax2.set_title('Median SNR Histogram')
+#
+# plt.show()
+# plt.close
+
+# Downloading the data
+
+getFitsFiles(gs,dbPath)
+
+# Calculate E(B-V) values for each galaxy (parallelly)
+gs['ebv'] = calcEbv(gs, dbPath)
+
+## Obtaining spectra and feature engineering
 
 t_f = time()
 print(f'Time elapsed: {t_f-t_i:2}')

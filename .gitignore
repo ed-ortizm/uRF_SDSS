@@ -1,5 +1,6 @@
-# Ignore my large csv file for the urls
+# Ignore my large csv file for the urls and data files
 *.test
+db/sas/
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
