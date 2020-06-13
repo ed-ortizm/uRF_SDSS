@@ -30,7 +30,7 @@ f_interp = interp1d(wls_x, a_l_x, kind="cubic")
 def getFitsFiles(gs, dbPath):
 
     """
-    Downloads .fits files from SDSS dr14 for the galaxies specified in the gs DataFrame to dbPath (parallel version)
+    Downloads .fits files from SDSS dr16 for the galaxies specified in the gs DataFrame to dbPath (parallel version)
     :param gs: Pandas Dataframe: Containing the fields 'plate', 'mjd', 'fiberid', run2d'
     :param dbPath: String: Path to dB folder (where 'sas' folder is located).
     :param fitsFolder: String: fitsFolder name inside dbPath to place the .fits file
@@ -78,7 +78,7 @@ def getFitFile_i(gs, dbPath, i):
         getFitsFile(plate, mjd, fiberid, run2d, dbPath)
         return 0
     except Exception as e:
-        print ('Failed to DL: ' + 'https://data.sdss.org/' + 'sas/dr14/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/' + '-'.join(['spec',plate,mjd,fiberid]) + '.fits')
+        print ('Failed to DL: ' + 'https://data.sdss.org/' + 'sas/dr16/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/' + '-'.join(['spec',plate,mjd,fiberid]) + '.fits')
         print(f'The run2d is {run2d}')
         print(str(e))
         return 1
@@ -98,7 +98,7 @@ def getFitsFile(plate, mjd, fiberid, run2d, dbPath):
 
     # Calculate paths
     filename = '-'.join(['spec',plate,mjd,fiberid]) + '.fits'
-    SDSSpath = 'sas/dr14/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
+    SDSSpath = 'sas/dr16/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
     url = 'https://data.sdss.org/' + SDSSpath + filename
     folderPath = dbPath + SDSSpath
     dest = folderPath + filename
@@ -255,7 +255,7 @@ def calcEbv_i(g, ebvMap, i):
 #
 #     # Calculate path to .fits file
 #     filename = '-'.join(['spec', plate, mjd, fiberid]) + '.fits'
-#     SDSSpath = 'sas/dr14/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
+#     SDSSpath = 'sas/dr16/sdss/spectro/redux/' + run2d + '/spectra/lite/' + plate + '/'
 #
 #     dest = dbPath + SDSSpath + filename
 #

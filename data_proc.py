@@ -24,7 +24,9 @@ print(f'There are {n0_rows} objects')
 print(f'{n_z_noqso} redshifts were replaced by the z_noqso value')
 print(f'{n0_rows - n_z_noqso} redshifts remained the same')
 
-gs.loc[idx,'z'] = gs.loc[idx,'z_noqso'].values
+#gs.loc[idx,'z'] = gs.loc[idx,'z_noqso'].values
+# This one is slighly faster
+gs.loc[idx,'z'] = gs.z_noqso.loc[idx].values
 
 # Remove galaxies with redshift z<=0.01
 
@@ -36,8 +38,8 @@ print(f'{n0_rows - n1_rows} galaxies with z <= 0.01 removed')
 gs.index = np.arange(n1_rows)
 
 # Choose the top n_obs median SNR objects
-# It is supposed to be already ordered, but it isn't
 gs.sort_values(by=['snMedian'], ascending=False, inplace=True)
+
 n_obs = 1000
 gs = gs[:n_obs]
 
@@ -45,15 +47,16 @@ gs.index = np.arange(n_obs)
 
 # Create links for the Download
 
-url_head = 'http://skyserver.sdss.org/dr14/en/tools/explore/summary.aspx?plate='
+url_head = 'http://skyserver.sdss.org/dr16/en/tools/explore/summary.aspx?plate='
 
+# It cannot be done with a big f string
 gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
             + gs['mjd'].astype(str) \
             + '&fiber=' + gs['fiberid'].map('{:04}'.format)
 
 
-# Plotting the z and SNR distribution
-
+# # Plotting the z and SNR distribution
+#
 # fig, axarr = plt.subplots(1, 2)
 #
 # fig.set_figheight(7)
@@ -74,7 +77,7 @@ gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
 # plt.show()
 # plt.close
 
-# Downloading the data
+# Downloading the data...
 
 getFitsFiles(gs,dbPath)
 
