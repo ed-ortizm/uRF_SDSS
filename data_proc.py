@@ -7,8 +7,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 from uRF_SDSS import getFitsFiles
 from uRF_SDSS import calcEbv
+from uRF_SDSS import fitsToSpecs
 t_i = time()
-#### Obtain the spectra from SDSS DR14
+#### Obtain the spectra from SDSS DR16
 
 ## The sample
 dbPath= os.getcwd()+ '/db/'
@@ -53,10 +54,10 @@ url_head = 'http://skyserver.sdss.org/dr16/en/tools/explore/summary.aspx?plate='
 gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
             + gs['mjd'].astype(str) \
             + '&fiber=' + gs['fiberid'].map('{:04}'.format)
+gs.to_csv('db/gs.test')
 
+# Plotting the z and SNR distribution
 
-# # Plotting the z and SNR distribution
-#
 # fig, axarr = plt.subplots(1, 2)
 #
 # fig.set_figheight(7)
@@ -85,6 +86,6 @@ getFitsFiles(gs,dbPath)
 gs['ebv'] = calcEbv(gs, dbPath)
 
 ## Obtaining spectra and feature engineering
-
+gs, specs, grid, specobjids = fitsToSpecs(gs, dbPath)
 t_f = time()
 print(f'Time elapsed: {t_f-t_i:2}')
