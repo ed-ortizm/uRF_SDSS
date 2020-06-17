@@ -358,7 +358,10 @@ def remove_cont(specs, grid, poly_order=5, bin_size=600):
         m, n = global_specs.shape
 
         # Calculate the wavelengths corresponding to the spectrum's samples
-        spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+
+        # spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+        # len(grid) / bin_size is not an integer, converting to an integer
+        spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(int(len(grid) / bin_size))]
         spec_med_wl = [np.median(grid[0:100])] + spec_med_wl + [np.median(grid[-100:])]
 
         # Calculate the spectrum with no continuum parallelly
@@ -390,7 +393,9 @@ def remove_cont_i(grid, spec_med_wl, poly_order, bin_size, i):
     spec = global_specs[i]
 
     # Sample the continuum according to the bin size (as well as 2 sample at a 100 bin-size at the edges)
-    spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+    # spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+    # len(grid) / bin_size is not an integer, converting to integer
+    spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(int(len(grid) / bin_size))]
     spec_med = [np.median(spec[:100])] + spec_med + [np.median(spec[-100:])]
 
     # Fit a polynomial of order poly_order to the samples
