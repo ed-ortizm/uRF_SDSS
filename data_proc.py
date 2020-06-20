@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from uRF_SDSS import getFitsFiles
 from uRF_SDSS import calcEbv
 from uRF_SDSS import fitsToSpecs
-from uRF_SDSS import remove_cont
 t_i = time()
 #### Obtain the spectra from SDSS DR16
 
@@ -88,34 +87,5 @@ gs['ebv'] = calcEbv(gs, dbPath)
 
 ## Obtaining spectra and feature engineering
 gs, specs, grid, specobjids = fitsToSpecs(gs, dbPath)
-
-## Removing the continuum
-
-# Calculate the spectrum after its continuum was removed and the polynomial coefficients used for the fit
-specs_no_cont, poly_coefs = remove_cont(specs, grid)
-np.save('db/fluxes_curated',specs_no_cont)
-# ## A random spectrum before and after removing the continuum
-# ix = np.random.randint(0, len(gs))
-#
-# fig, axarr = plt.subplots(1, 2)
-#
-# fig.set_figheight(7)
-# fig.set_figwidth(14)
-#
-# ax1 = axarr[0]
-# ax1.plot(grid, specs[ix], label='Flux')
-# ax1.plot(grid, np.poly1d(poly_coefs[ix])(grid), label='Fit')
-# ax1.set_xlabel('Wavelength [$\AA$]')
-# ax1.set_ylabel('Normalized Flux [ul]')
-# ax1.set_title('Before')
-# ax1.legend()
-#
-# ax2 = axarr[1]
-# ax2.plot(grid, specs_no_cont[ix])
-# ax2.set_xlabel('Wavelength [$\AA$]')
-# ax2.set_ylabel('Normalized Flux [ul]')
-# ax2.set_title('After')
-#
-# plt.show()
 t_f = time()
 print(f'Time elapsed: {t_f-t_i:2}')
