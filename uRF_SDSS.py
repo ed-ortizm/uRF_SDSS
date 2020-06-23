@@ -207,7 +207,6 @@ def fitsToSpecs(gs, dbPath, nanRemovalThreshold=0.15):
         res = sorted(res, key=lambda x: x[0])
         specs = np.array([x[1] for x in res])
         print(f'{specs.size*specs.itemsize*1e-6} MB')
-        exit()
         print('    Done!')
 
         print('  Removing spectra with many NaNs... '),
@@ -359,11 +358,12 @@ def remove_cont(specs, grid, poly_order=5, bin_size=600):
         m, n = global_specs.shape
 
         # Calculate the wavelengths corresponding to the spectrum's samples
-        spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+        # spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+        spec_med_wl = [np.median(grid[j * bin_size:(j + 1) * bin_size]) for j in range(int(len(grid) / bin_size))]
         spec_med_wl = [np.median(grid[0:100])] + spec_med_wl + [np.median(grid[-100:])]
-
+        print(f'Before calling remove_cont_i global_specs has a shape of {global_specs.shape}')
         # Calculate the spectrum with no continuum parallelly
-        res = Parallel(n_jobs=-2)(   # Change the number of jobs to -1 to use all available cores (for larger samples)
+        res = Parallel(n_jobs=-1)(   # Change the number of jobs to -1 to use all available cores (for larger samples)
             delayed(remove_cont_i)(grid, spec_med_wl, poly_order, bin_size, i) for i in range(m))
         specs_no_cont = np.zeros(global_specs.shape)
         poly_coefs = np.zeros((m, poly_order + 1))
@@ -388,10 +388,13 @@ def remove_cont_i(grid, spec_med_wl, poly_order, bin_size, i):
             poly_i_coef: numpy array 1-D: The polynomial coefficients used for the fit
     """
     # Choose the spectrum matching the ith galaxy
+    # print(f'The value of global_specs is {global_specs}')
+    print(f'Inside remove_cont_i global_specs has a shape of {global_specs.shape}')
     spec = global_specs[i]
 
     # Sample the continuum according to the bin size (as well as 2 sample at a 100 bin-size at the edges)
-    spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+    # spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(len(grid) / bin_size)]
+    spec_med = [np.median(spec[j * bin_size:(j + 1) * bin_size]) for j in range(int(len(grid) / bin_size))]
     spec_med = [np.median(spec[:100])] + spec_med + [np.median(spec[-100:])]
 
     # Fit a polynomial of order poly_order to the samples

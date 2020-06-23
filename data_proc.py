@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 import os
+from time import time
+
 import numpy as np
 import pandas as pd
-from time import time
 import matplotlib
 import matplotlib.pyplot as plt
+
 from uRF_SDSS import getFitsFiles
 from uRF_SDSS import calcEbv
 from uRF_SDSS import fitsToSpecs
+from uRF_SDSS import remove_cont
+
 t_i = time()
+
 #### Obtain the spectra from SDSS DR16
 
 ## The sample
-dbPath= os.getcwd()+ '/db/'
-gs = pd.read_csv(dbPath+'demo.test', header=0)
+dbPath= f'{os.getcwd()}/db/'
+gs = pd.read_csv(f'{dbPath}gals_DR16.csv', header=0)
 
 # Replacing z by z_noqso when possible
 
@@ -41,7 +46,7 @@ gs.index = np.arange(n1_rows)
 # Choose the top n_obs median SNR objects
 gs.sort_values(by=['snMedian'], ascending=False, inplace=True)
 
-n_obs = 1000
+n_obs = 10
 gs = gs[:n_obs]
 
 gs.index = np.arange(n_obs)
@@ -54,7 +59,7 @@ url_head = 'http://skyserver.sdss.org/dr16/en/tools/explore/summary.aspx?plate='
 gs['url'] = url_head + gs['plate'].map('{:04}'.format) + '&mjd='\
             + gs['mjd'].astype(str) \
             + '&fiber=' + gs['fiberid'].map('{:04}'.format)
-gs.to_csv('db/gs.test')
+gs.to_csv(f'{dbPath}gs.csv')
 
 # Plotting the z and SNR distribution
 
@@ -87,5 +92,35 @@ gs['ebv'] = calcEbv(gs, dbPath)
 
 ## Obtaining spectra and feature engineering
 gs, specs, grid, specobjids = fitsToSpecs(gs, dbPath)
+
+## Removing the continuum
+print(f'The shape of specs is {specs.shape}')
+# Calculate the spectrum after its continuum was removed and the polynomial coefficients used for the fit
+specs_no_cont, poly_coefs = remove_cont(specs, grid)
+np.save(f'{dbPath}flx_{n_obs}',specs_no_cont)
+# ## A random spectrum before and after removing the continuum
+# ix = np.random.randint(0, len(gs))
+#
+# fig, axarr = plt.subplots(1, 2)
+#
+# fig.set_figheight(7)
+# fig.set_figwidth(14)
+#
+# ax1 = axarr[0]
+# ax1.plot(grid, specs[ix], label='Flux')
+# ax1.plot(grid, np.poly1d(poly_coefs[ix])(grid), label='Fit')
+# ax1.set_xlabel('Wavelength [$\AA$]')
+# ax1.set_ylabel('Normalized Flux [ul]')
+# ax1.set_title('Before')
+# ax1.legend()
+#
+# ax2 = axarr[1]
+# ax2.plot(grid, specs_no_cont[ix])
+# ax2.set_xlabel('Wavelength [$\AA$]')
+# ax2.set_ylabel('Normalized Flux [ul]')
+# ax2.set_title('After')
+#
+# plt.show()
+
 t_f = time()
-print(f'Time elapsed: {t_f-t_i:2}')
+print(f'Time elapsed: {t_f-t_i:.2}')
