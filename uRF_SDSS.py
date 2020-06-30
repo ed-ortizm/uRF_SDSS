@@ -136,7 +136,7 @@ def calcEbv(gs, dbPath):
         ebvMap = sfdmap.SFDMap(dbPath + 'sfddata-master')
 
         # Calculate E(b-v) for each galaxy parallelly
-        res = Parallel(n_jobs=-2, verbose=1)(
+        res = Parallel(n_jobs=-1, verbose=1)(
             delayed(calcEbv_i)(gs.iloc[i], ebvMap, i) for i in range(len(gs)))
 
         res = sorted(res, key=lambda x: x[0])
@@ -169,7 +169,7 @@ def fitsToSpecs(gs, dbPath, nanRemovalThreshold=0.15):
         start = time()
 
         # Get spectra from .fits files
-        res = Parallel(n_jobs=-2, verbose=5)(
+        res = Parallel(n_jobs=-1, verbose=5)(
             delayed(fitsToSpecs_i)(gs.iloc[i], dbPath, i) for i in range(len(gs)))
         print('    Done!')
 
@@ -201,7 +201,7 @@ def fitsToSpecs(gs, dbPath, nanRemovalThreshold=0.15):
         # Place spectra on grid & smooth
         print('  Manipulating spectra... ')
 
-        res = Parallel(n_jobs=-2, verbose=5)(
+        res = Parallel(n_jobs=-1, verbose=5)(
             delayed(fitsToSpec_manipulate_i)(grid, wls[i], specsList[i], i) for i in range(len(gs)))
 
         res = sorted(res, key=lambda x: x[0])
@@ -363,7 +363,7 @@ def remove_cont(specs, grid, poly_order=5, bin_size=600):
         spec_med_wl = [np.median(grid[0:100])] + spec_med_wl + [np.median(grid[-100:])]
         print(f'Before calling remove_cont_i global_specs has a shape of {global_specs.shape}')
         # Calculate the spectrum with no continuum parallelly
-        res = Parallel(n_jobs=-1)(   # Change the number of jobs to -1 to use all available cores (for larger samples)
+        res = Parallel(n_jobs=1)(   # Change the number of jobs to -1 to use all available cores (for larger samples)
             delayed(remove_cont_i)(grid, spec_med_wl, poly_order, bin_size, i) for i in range(m))
         specs_no_cont = np.zeros(global_specs.shape)
         poly_coefs = np.zeros((m, poly_order + 1))
@@ -549,7 +549,7 @@ def calcDisMat(rf, X_real):
         estList = rf.estimators_
         n_est = len(estList)
 
-        realLeafs = Parallel(n_jobs=-2, verbose=1)(
+        realLeafs = Parallel(n_jobs=-1, verbose=1)(
             delayed(realLeaf_i)(estList[i].tree_.value, leafs[:, i]) for i in range(n_est))
         realLeafs = np.array(realLeafs, dtype=bool).T
 
@@ -561,7 +561,7 @@ def calcDisMat(rf, X_real):
         # pool = mp.Pool()
         # f = partial(dist_i_mp)
         # res = pool.map(dist_i_mp, range(n))
-        res = Parallel(n_jobs=-2, verbose=1)(delayed(dist_i)(i, leafs[i:, :], leafs[i], realLeafs[i:, :], realLeafs[i]) for i in range(n))
+        res = Parallel(n_jobs=-1, verbose=1)(delayed(dist_i)(i, leafs[i:, :], leafs[i], realLeafs[i:, :], realLeafs[i]) for i in range(n))
 
         del leafs, realLeafs
         for tup in res:
